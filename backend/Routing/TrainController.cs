@@ -1,11 +1,11 @@
 ﻿using BleScanner;
 using Microsoft.AspNetCore.Mvc;
 
-namespace TrainController
+namespace TrainController.Routing
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class Routing : ControllerBase
+    public class TrainController : ControllerBase
     {
         [HttpGet]
         public ActionResult<IEnumerable<Hub>> GetHubs()
@@ -14,41 +14,41 @@ namespace TrainController
         }
         
         [HttpPost("{bleAddress}/setSpeed")]
-        public ActionResult SetSpeed(ulong bleAddress, int speed)
+        public async Task<ActionResult> SetSpeed(ulong bleAddress, int speed)
         {
-            Hub? hub = HubManager.hubs.FirstOrDefault(h => h.bluetoothAddress == bleAddress);
+            var hub = HubManager.hubs.FirstOrDefault(h => h.bluetoothAddress == bleAddress);
             if (hub == null)
             {
                 Console.WriteLine("Hub not found");
                 return NotFound();
             }
-            hub.SetMotorSpeed(speed);
+            await hub.SetMotorSpeed(speed);
             return Ok();
         }
         
         [HttpPost("{bleAddress}/setLightIntensity")]
-        public ActionResult SetLightIntensity(ulong bleAddress, int lightIntensity)
+        public async Task<ActionResult> SetLightIntensity(ulong bleAddress, int lightIntensity)
         {
-            Hub? hub = HubManager.hubs.FirstOrDefault(h => h.bluetoothAddress == bleAddress);
+            var hub = HubManager.hubs.FirstOrDefault(h => h.bluetoothAddress == bleAddress);
             if (hub == null)
             {
                 Console.WriteLine("Hub not found");
                 return NotFound();
             }
-            hub.SetLightIntensity(lightIntensity);
+            await hub.SetLightIntensity(lightIntensity);
             return Ok();
         }
         
         [HttpPost("{bleAddress}/setLedColor")]
-        public ActionResult SetLedColor(ulong bleAddress, int colorCode)
+        public async Task<ActionResult> SetLedColor(ulong bleAddress, int colorCode)
         {
-            Hub? hub = HubManager.hubs.FirstOrDefault(h => h.bluetoothAddress == bleAddress);
+            var hub = HubManager.hubs.FirstOrDefault(h => h.bluetoothAddress == bleAddress);
             if (hub == null)
             {
                 Console.WriteLine("Hub not found");
                 return NotFound();
             }
-            hub.SetLedColor(colorCode);
+            await hub.SetLedColor(colorCode);
             return Ok();
         }
     }
