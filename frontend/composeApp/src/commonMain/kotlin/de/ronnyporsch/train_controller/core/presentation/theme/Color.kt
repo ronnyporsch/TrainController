@@ -1,0 +1,27 @@
+package de.ronnyporsch.train_controller.core.presentation.theme
+
+import androidx.compose.ui.graphics.Color
+
+val md_theme_dark_primary = Color(0xFFFF00FF)
+val md_theme_dark_onPrimary = Color(0xFFFFFFFF)
+val md_theme_dark_primaryContainer = Color(0xFFFF00FF)
+val md_theme_dark_onPrimaryContainer = Color(0xFFFFFFFF)
+val md_theme_dark_secondary = Color(0xFFCDC5BF)
+val md_theme_dark_onSecondary = Color(0xFF34302C)
+val md_theme_dark_secondaryContainer = Color(0xFF000000)
+val md_theme_dark_onSecondaryContainer = Color(0xFF808080)
+val md_theme_dark_tertiary = Color(0xFF262a2b)
+val md_theme_dark_onTertiary = Color(0xFFe0dedc)
+val md_theme_dark_tertiaryContainer = Color(0xFF595959)
+val md_theme_dark_onTertiaryContainer = Color(0xFFFFFFFF)
+val md_theme_dark_error = Color(0xFFE6000F)
+val md_theme_dark_errorContainer = Color(0xFF93000A)
+val md_theme_dark_onError = Color(0xFF690005)
+val md_theme_dark_onErrorContainer = Color(0xFFFFB4AB)
+val md_theme_dark_background = Color(0xFF000000)
+val md_theme_dark_onBackground = Color(0xFFE6E1E0)
+val md_theme_dark_surface = Color(0xFF1D1B1A)
+val md_theme_dark_onSurface = Color(0xFFE6E1E0)
+val md_theme_dark_surfaceVariant = Color(0xFF494644)
+val md_theme_dark_onSurfaceVariant = Color(0xFFE6E1E0)
+val md_theme_dark_outline = Color(0xFF94908D)

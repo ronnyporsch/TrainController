@@ -1,6 +1,7 @@
 using TrainController;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.WebHost.UseUrls("http://localhost:5091");
 
 builder.Services.AddControllers();
 

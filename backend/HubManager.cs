@@ -20,8 +20,6 @@ static class HubManager
             if (eventArgs.Advertisement.ManufacturerData.All(m => m.CompanyId != LEGO_COMPANY_ID)) return;
 
             Console.WriteLine("LEGO Hub detected, attempting to connect...");
-            watcher.Stop();
-
 
             var device = await BluetoothLEDevice.FromBluetoothAddressAsync(eventArgs.BluetoothAddress);
             if (device == null)
