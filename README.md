@@ -2,7 +2,7 @@
 Control your Lego Powered Up Trains from your PC! You can even do so with a gamepad (or more than one!)
 ## Features
 - **Control speed and Light**
-- **Gamepad Support**: use your XBox Gamepad to drive your trains
+- **Gamepad Support**: use your Xbox Gamepad to drive your trains
 - **Control multiple trains at the same time**: When using a Gamepad, you can select multiple trains to control at once
 - **Multiplayer**: Use multiple controllers at the same time to control different trains
 
