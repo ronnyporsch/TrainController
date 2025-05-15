@@ -5,7 +5,9 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <InvariantGlobalization>false</InvariantGlobalization> 
-    <RootNamespace>TrainController</RootNamespace> 
+    <RootNamespace>TrainController</RootNamespace>
+    <PublishDir>$(MSBuildProjectDirectory)\backendBinaries</PublishDir>
+    <AssemblyName>TrainControllerBackend</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,6 +17,24 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="MyCustomOutput\web.config" />
+    <_ContentIncludedByDefault Remove="MyCustomOutput\appsettings.Development.json" />
+    <_ContentIncludedByDefault Remove="MyCustomOutput\appsettings.json" />
+    <_ContentIncludedByDefault Remove="MyCustomOutput\TrainController.deps.json" />
+    <_ContentIncludedByDefault Remove="MyCustomOutput\TrainController.runtimeconfig.json" />
+    <_ContentIncludedByDefault Remove="MyCustomOutput\TrainController.staticwebassets.endpoints.json" />
+    <_ContentIncludedByDefault Remove="MyCustomOutput\MyCustomAppName.deps.json" />
+    <_ContentIncludedByDefault Remove="MyCustomOutput\MyCustomAppName.runtimeconfig.json" />
+    <_ContentIncludedByDefault Remove="MyCustomOutput\MyCustomAppName.staticwebassets.endpoints.json" />
+    <_ContentIncludedByDefault Remove="BackendBinaries\web.config" />
+    <_ContentIncludedByDefault Remove="BackendBinaries\appsettings.Development.json" />
+    <_ContentIncludedByDefault Remove="BackendBinaries\appsettings.json" />
+    <_ContentIncludedByDefault Remove="BackendBinaries\TrainControllerBackend.deps.json" />
+    <_ContentIncludedByDefault Remove="BackendBinaries\TrainControllerBackend.runtimeconfig.json" />
+    <_ContentIncludedByDefault Remove="BackendBinaries\TrainControllerBackend.staticwebassets.endpoints.json" />
   </ItemGroup>
 
 </Project>

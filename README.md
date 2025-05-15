@@ -13,10 +13,15 @@ Control your Lego Powered Up Trains from your PC! You can even do so with a game
 - Turn on your Lego Trains
 - Enjoy!
 
+## Build it locally
+- Clone the repository
+- run the build.cmd (Windows)
+- The executable can then be found in the newly created dist dir
+
 ## Limitations
 - Windows only
 - This program only works with the Lego City Powered Up Hubs (found for example in the current [Passenger](https://www.lego.com/en-us/product/express-passenger-train-60337) and [Freight Trains](https://www.lego.com/en-us/product/freight-train-60336) )
-- The program expects the Motor to be on Port A of the train hub, the light (if available on Port B)
+- The program expects the Motor to be on Port A of the train hub, the light (if available) on Port B
 - Gamepad Support was only tested with Xbox One Gamepads. Others may or may not work properly
 
 ## Roadmap

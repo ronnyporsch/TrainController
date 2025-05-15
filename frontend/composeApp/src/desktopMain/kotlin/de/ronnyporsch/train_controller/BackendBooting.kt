@@ -6,7 +6,7 @@ lateinit var backendProcess : Process
 fun startBackend() {
     println("Starting backend")
     val appDir = File(System.getProperty("user.dir"))
-    val backendPath = File(appDir, "bin/TrainController.exe").absolutePath
+    val backendPath = File(appDir, "backendBinaries/TrainControllerBackend.exe").absolutePath
     backendProcess = ProcessBuilder(backendPath)
         .inheritIO()
         .start()
