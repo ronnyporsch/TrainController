@@ -3,7 +3,7 @@ package de.ronnyporsch.train_controller.presentation
 import de.ronnyporsch.train_controller.gamepad.GamepadActuator
 import de.ronnyporsch.train_controller.gamepad.GamepadButton
 import de.ronnyporsch.train_controller.gamepad.GamepadTrigger
-import kotlinproject.composeapp.generated.resources.*
+import traincontroller.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.DrawableResource
 
 val gamepadIconMapping: Map<GamepadActuator, DrawableResource> = mapOf(
