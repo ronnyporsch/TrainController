@@ -12,7 +12,7 @@ fun main() = application {
             exitApplication()
         },
         title = APP_NAME,
-        state = WindowState(height = 700.dp, width = 800.dp),
+        state = WindowState(height = 800.dp, width = 1000.dp),
     ) {
         App()
     }
