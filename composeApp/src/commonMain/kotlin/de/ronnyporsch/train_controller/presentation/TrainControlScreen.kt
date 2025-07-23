@@ -86,6 +86,12 @@ fun TrainControlScreen(viewModel: TrainControlViewModel) {
                                 onCheckedChange = { CoroutineScope(Dispatchers.MyIO).launch { train.toggleReverseDirection() } }
                             )
                         }
+                        Button(
+                            shape = RectangleShape,
+                            colors = ButtonDefaults.buttonColors().copy(containerColor = playerColor),
+                            onClick = { CoroutineScope(Dispatchers.MyIO).launch { train.toggleLight() } }) {
+                            Text("Toggle Light")
+                        }
                     }
                 }
             }
