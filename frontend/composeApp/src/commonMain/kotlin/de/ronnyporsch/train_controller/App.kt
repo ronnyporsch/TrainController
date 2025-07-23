@@ -8,13 +8,14 @@ import de.ronnyporsch.train_controller.core.presentation.theme.SingularityTheme
 import de.ronnyporsch.train_controller.presentation.TrainControlScreen
 import de.ronnyporsch.train_controller.presentation.TrainControlViewModel
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
 @Preview
 fun App() {
     SingularityTheme {
         Surface(Modifier.fillMaxSize()) {
-            TrainControlScreen(TrainControlViewModel())
+            TrainControlScreen(viewModel {TrainControlViewModel() })
         }
     }
 }

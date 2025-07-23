@@ -30,6 +30,7 @@ import kotlin.math.absoluteValue
 @Composable
 fun TrainControlScreen(viewModel: TrainControlViewModel) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val trains by Train.trains.collectAsStateWithLifecycle()
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         uiState.error?.let { error ->
             Text("$error\nRetrying...", color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.titleLarge)
@@ -39,14 +40,14 @@ fun TrainControlScreen(viewModel: TrainControlViewModel) {
             Text(APP_NAME, style = MaterialTheme.typography.titleLarge, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
 
             Spacer(Modifier.height(16.dp))
-            if (uiState.trains.isEmpty()) {
+            if (trains.isEmpty()) {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text("No trains found", style = MaterialTheme.typography.titleLarge)
                 }
                 return
             }
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                for (train in uiState.trains) {
+                for (train in trains) {
                     val playerColor = train.currentPlayer?.color?.composeColor ?: Color.Gray
                     Column(
                         Modifier.displayHoveringPlayers(uiState, train).displayCurrentPlayer(train).padding(32.dp),
@@ -58,7 +59,7 @@ fun TrainControlScreen(viewModel: TrainControlViewModel) {
                             modifier = Modifier.rotateWhileKeepingConstrains().width(120.dp).height(50.dp),
                             value = train.speed.toFloat().absoluteValue,
                             onValueChange = { newSpeed ->
-                                viewModel.process(TrainControlIntent.ChangeSpeed(train.bluetoothAddress, newSpeed.toInt()))
+                                CoroutineScope(Dispatchers.MyIO).launch { train.changeSpeed(newSpeed.toInt()) }
                             },
                             valueRange = 0f..100f,
                             colors = SliderDefaults.colors().copy(
