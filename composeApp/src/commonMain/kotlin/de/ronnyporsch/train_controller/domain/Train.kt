@@ -15,7 +15,7 @@ data class Train(
     val hub: Hub
 ) {
     @OptIn(ExperimentalApi::class)
-    val name = hub.peripheral.name ?: "Unknown name"
+    val name = hub.peripheral.name ?: "Unknown"
     var speed by mutableStateOf(0)
         private set
     var lightIntensity by mutableStateOf(0)
@@ -54,6 +54,7 @@ data class Train(
     }
 
     suspend fun changeSpeed(speed: Int) {
+        if (hub.state != Hub.State.READY) return
         this.speed = speed
         val speedToSend = if (reverseDirection) -speed else speed
         hub.setMotorSpeed(speedToSend)

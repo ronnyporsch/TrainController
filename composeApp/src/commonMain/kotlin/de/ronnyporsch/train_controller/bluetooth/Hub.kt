@@ -1,5 +1,8 @@
 package de.ronnyporsch.train_controller.bluetooth
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import com.juul.kable.DiscoveredCharacteristic
 import com.juul.kable.Identifier
 import com.juul.kable.Peripheral
@@ -23,7 +26,7 @@ data class Hub(
     val identifier: Identifier,
     val peripheral: Peripheral,
 ) {
-
+    var state by mutableStateOf(State.NOT_YET_CONNECTED)
     var writeCharacteristic: DiscoveredCharacteristic? = null
 
     @OptIn(ExperimentalUuidApi::class)
@@ -31,6 +34,7 @@ data class Hub(
         logger.i("Connecting to hub ${peripheral.identifier} ...")
         peripheral.connect()
         logger.i("Connected to hub ${peripheral.identifier}")
+        state = State.PREPARING
         retrieveWriteCharacteristic()
     }
 
@@ -40,6 +44,7 @@ data class Hub(
         val legoService = services?.first { it.serviceUuid.toString() == LEGO_SERVICE_UUID }
         writeCharacteristic = legoService?.characteristics?.first { it.characteristicUuid.toString() == WRITE_CHARACTERISTIC_UUID }
         logger.d("writeCharacteristic retrieved: ${writeCharacteristic?.characteristicUuid}")
+        if (writeCharacteristic != null) {state = State.READY }
     }
 
 
@@ -55,7 +60,7 @@ data class Hub(
             0x64, // Acceleration
             0x03 // Profile
         )
-        writeCharacteristic?.let { peripheral.write(it, command) }?: logger.w("writeCharacteristic is null")
+        writeCharacteristic?.let { peripheral.write(it, command) } ?: logger.w("writeCharacteristic is null")
     }
 
     suspend fun setLightIntensity(intensity: Int) {
@@ -72,12 +77,12 @@ data class Hub(
             0x03          // Profile
         )
 
-        writeCharacteristic?.let { peripheral.write(it, command) }?: logger.w("writeCharacteristic is null")
+        writeCharacteristic?.let { peripheral.write(it, command) } ?: logger.w("writeCharacteristic is null")
     }
 
     suspend fun setLEDColor(color: Int) {
         val command = byteArrayOf(0x07, 0x00, 0x81.toByte(), 0x32, 0x11, 0x51, 0x00, color.toByte())
-        writeCharacteristic?.let { peripheral.write(it, command) }?: logger.w("writeCharacteristic is null")
+        writeCharacteristic?.let { peripheral.write(it, command) } ?: logger.w("writeCharacteristic is null")
     }
 
     companion object {
@@ -99,6 +104,10 @@ data class Hub(
             }
         }
 
+    }
+
+    enum class State {
+        NOT_YET_CONNECTED, PREPARING, READY
     }
 }
 

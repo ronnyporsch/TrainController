@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
@@ -19,9 +20,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import de.ronnyporsch.train_controller.APP_NAME
+import de.ronnyporsch.train_controller.bluetooth.Hub
 import de.ronnyporsch.train_controller.core.MyIO
 import de.ronnyporsch.train_controller.domain.Train
 import de.ronnyporsch.train_controller.util.presentation.rotateWhileKeepingConstrains
+import de.ronnyporsch.train_controller.util.presentation.thenIf
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -38,7 +41,6 @@ fun TrainControlScreen(viewModel: TrainControlViewModel) {
         }
         Column(modifier = Modifier.padding(16.dp)) {
             Text(APP_NAME, style = MaterialTheme.typography.titleLarge, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
-
             Spacer(Modifier.height(16.dp))
             if (trains.isEmpty()) {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -50,7 +52,8 @@ fun TrainControlScreen(viewModel: TrainControlViewModel) {
                 for (train in trains) {
                     val playerColor = train.currentPlayer?.color?.composeColor ?: Color.Gray
                     Column(
-                        Modifier.displayHoveringPlayers(uiState, train).displayCurrentPlayer(train).padding(32.dp),
+                        Modifier.displayHoveringPlayers(uiState, train).displayCurrentPlayer(train).padding(32.dp)
+                            .thenIf(train.hub.state != Hub.State.READY, Modifier.blur(4.dp)),
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
