@@ -33,7 +33,7 @@ Control your Lego Powered Up Trains from your PC or phone! On Windows, you can e
 
 ## Roadmap
 - Include Gamepad support on Android
-- Include Browser
+- Include Browser support
 
 ## Credits
 This software was inspired by the amazing [Brick Automation Project](https://github.com/Cosmik42/BAP)
