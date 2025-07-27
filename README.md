@@ -1,8 +1,12 @@
+![Platform: Windows](https://img.shields.io/badge/Platform-Windows-blue)
+![Platform: Android](https://img.shields.io/badge/Platform-Android-green?logo=android&logoColor=white)
+
+
 # Train Controller
-Control your Lego Powered Up Trains from your PC! You can even do so with a gamepad (or more than one!)
+Control your Lego Powered Up Trains from your PC or phone! On Windows, you can even do so with a gamepad (or more than one!)
 ## Features
 - **Control speed and Light**
-- **Gamepad Support**: use your Xbox Gamepad to drive your trains
+- **Gamepad Support** (only Windows): use your Xbox Gamepad to drive your trains
 - **Control multiple trains at the same time**: When using a Gamepad, you can select multiple trains to control at once
 - **Multiplayer**: Use multiple controllers at the same time to control different trains
 
@@ -24,8 +28,8 @@ Control your Lego Powered Up Trains from your PC! You can even do so with a game
 - Gamepad Support was only tested with Xbox One Gamepads. Others may or may not work properly
 
 ## Roadmap
-- Include Android support
-- Include Browser support
+- Include Gamepad support on Android
+- Include Browser
 
 ## Credits
 This software was inspired by the amazing [Brick Automation Project](https://github.com/Cosmik42/BAP)
