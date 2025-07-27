@@ -10,7 +10,11 @@ Control your Lego Powered Up Trains from your PC or phone! On Windows, you can e
 - **Control multiple trains at the same time**: When using a Gamepad, you can select multiple trains to control at once
 - **Multiplayer**: Use multiple controllers at the same time to control different trains
 
+## UI
+<img width="1037" height="827" alt="Screenshot 2025-07-27 131602" src="https://github.com/user-attachments/assets/43d9b4e8-7869-4bc0-a747-71ef395ed05f" />
+
 ## How to use
+
 - Download and unzip the [latest Release](https://github.com/ronnyporsch/TrainController/releases/latest)
 - Run TrainController.exe in the root dir
 - (Optional) Connect up to four Gamepads
