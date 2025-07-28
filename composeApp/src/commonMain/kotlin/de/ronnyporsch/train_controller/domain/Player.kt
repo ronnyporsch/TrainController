@@ -7,6 +7,7 @@ import androidx.compose.runtime.setValue
 data class Player(
     val index : Int,
 ) {
+    var gamepadId by mutableStateOf<Int?>(null)
     var hoveredTrain by mutableStateOf<Train?>(null)
 
     val color: PlayerColor

@@ -1,6 +1,8 @@
 package de.ronnyporsch.train_controller
 
 import android.os.Bundle
+import android.view.KeyEvent
+import android.view.MotionEvent
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Box
@@ -15,6 +17,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import de.ronnyporsch.train_controller.bluetooth.askUserToEnableBluetoothIfNotOnAlready
 import de.ronnyporsch.train_controller.bluetooth.bluetoothEnabledFlow
+import de.ronnyporsch.train_controller.gamepad.Gamepad
+import de.ronnyporsch.train_controller.gamepad.Gamepad.Companion.isGamepad
 import de.ronnyporsch.train_controller.permissions.PermissionManager
 import de.ronnyporsch.train_controller.permissions.requiredPermissions
 import kotlinx.coroutines.CoroutineScope
@@ -54,6 +58,24 @@ class MainActivity : ComponentActivity() {
             App()
 
         }
+    }
+
+    override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
+        if (event.device.isGamepad()) {
+            if (Gamepad.handleKeyEvent(event)) {
+                return true
+            }
+        }
+        return super.onKeyUp(keyCode, event)
+    }
+
+    override fun dispatchGenericMotionEvent(event: MotionEvent): Boolean {
+        if (event.device.isGamepad()) {
+            if (Gamepad.handleMotionEvent(event)) {
+                return true
+            }
+        }
+        return super.dispatchGenericMotionEvent(event)
     }
 }
 

@@ -2,8 +2,9 @@ package de.ronnyporsch.train_controller.gamepad
 
 import kotlinx.coroutines.delay
 
-class Gamepad(val index: Int = 0) {
+actual class Gamepad actual constructor(actual val index: Int) {
     private val state = XInput.XInputState()
+    actual val eventFlow = GamepadEventFlow(this).eventFlow
 
     val isConnected: Boolean
         get() = XInput.INSTANCE.XInputGetState(index, state) == XInput.ERROR_SUCCESS
@@ -25,7 +26,15 @@ class Gamepad(val index: Int = 0) {
     fun getRightStick(): Pair<Int, Int> =
         Pair(state.Gamepad.sThumbRX.toInt(), state.Gamepad.sThumbRY.toInt())
 
-    fun setVibration(leftMotor: Int, rightMotor: Int) {
+    fun getPressedButtons(): Int {
+        var pressed = 0
+        GamepadButton.entries.forEach { button ->
+            if (this.isButtonPressed(button)) pressed = pressed or button.code
+        }
+        return pressed
+    }
+
+    private fun setVibration(leftMotor: Int, rightMotor: Int) {
         val vib = XInput.XInputVibration().apply {
             wLeftMotorSpeed = leftMotor.coerceIn(0..65535).toShort()
             wRightMotorSpeed = rightMotor.coerceIn(0..65535).toShort()
@@ -33,17 +42,18 @@ class Gamepad(val index: Int = 0) {
         XInput.INSTANCE.XInputSetState(index, vib)
     }
 
-    suspend fun shortVibration() {
+    actual suspend fun shortVibration() {
         setVibration(45000, 45000)
         delay(75)
         stopVibration()
     }
 
-    fun stopVibration() {
+    private fun stopVibration() {
         setVibration(0, 0)
     }
-    companion object {
-        const val MAX_GAMEPADS = 4
-        const val MAX_VALUE_TRIGGER = 255
+    actual companion object {
+        actual const val MAX_GAMEPADS = 4
+        actual const val MAX_VALUE_TRIGGER = 255
+        actual fun getALlGamepads() = List(MAX_GAMEPADS) { index -> Gamepad(index) }
     }
 }

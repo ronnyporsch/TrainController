@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.*
 import kotlin.collections.forEach
 import kotlin.time.Duration.Companion.milliseconds
 
-class GamepadEventFlow(private val controller: Gamepad) {
+class GamepadEventFlow(val controller: Gamepad) {
 
     private val pollInterval = 16.milliseconds // ~60 FPS
 
@@ -34,13 +34,13 @@ class GamepadEventFlow(private val controller: Gamepad) {
                 // Trigger events
                 val leftTrigger = controller.getLeftTrigger()
                 if (leftTrigger != previousLeftTrigger) {
-                    emit(GamepadEvent.LeftTriggerMoved(controller.index, leftTrigger))
+                    emit(GamepadEvent.LeftTriggerMoved(controller.index, leftTrigger.toFloat()))
                     previousLeftTrigger = leftTrigger
                 }
 
                 val rightTrigger = controller.getRightTrigger()
                 if (rightTrigger != previousRightTrigger) {
-                    emit(GamepadEvent.RightTriggerMoved(controller.index, rightTrigger))
+                    emit(GamepadEvent.RightTriggerMoved(controller.index, rightTrigger.toFloat()))
                     previousRightTrigger = rightTrigger
                 }
 
@@ -61,12 +61,4 @@ class GamepadEventFlow(private val controller: Gamepad) {
             delay(pollInterval)
         }
     }.flowOn(Dispatchers.Default)
-
-    private fun Gamepad.getPressedButtons(): Int {
-        var pressed = 0
-        GamepadButton.entries.forEach { button ->
-                if (this.isButtonPressed(button)) pressed = pressed or button.code
-            }
-        return pressed
-    }
 }
