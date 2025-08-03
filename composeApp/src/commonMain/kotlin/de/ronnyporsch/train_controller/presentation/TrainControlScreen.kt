@@ -20,6 +20,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import de.ronnyporsch.train_controller.APP_NAME
+import de.ronnyporsch.train_controller.bluetooth.BluetoothState
 import de.ronnyporsch.train_controller.bluetooth.Hub
 import de.ronnyporsch.train_controller.core.MyIO
 import de.ronnyporsch.train_controller.domain.Train
@@ -32,71 +33,95 @@ import kotlin.math.absoluteValue
 
 @Composable
 fun TrainControlScreen(viewModel: TrainControlViewModel) {
+    val bluetoothManager = viewModel.bluetoothManager
+    val bluetoothState by bluetoothManager.bluetoothStateFlow.collectAsStateWithLifecycle()
+    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        when (bluetoothState) {
+            BluetoothState.NotSupported -> Text("Bluetooth is not supported on this device")
+            BluetoothState.DisabledAndPermissionDenied -> BluetoothProblem(
+                "Grant Bluetooth Permission",
+                { bluetoothManager.askUserToGrantBluetoothPermissions() })
+
+            BluetoothState.DisabledAndPermissionGranted -> BluetoothProblem("Enable Bluetooth") { bluetoothManager.askUserToEnableBluetoothIfNotOnAlready() }
+            BluetoothState.EnabledAndPermissionGranted -> TrainOverview(viewModel)
+            is BluetoothState.Error -> Text("Error: ${(bluetoothState as BluetoothState.Error).exception.message}")
+        }
+    }
+}
+
+@Composable
+private fun BluetoothProblem(buttonText: String, buttonFunction: () -> Unit) {
+    Button(buttonFunction) {
+        Text(buttonText)
+    }
+}
+
+@Composable
+private fun TrainOverview(viewModel: TrainControlViewModel) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val trains by Train.trains.collectAsStateWithLifecycle()
-    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        uiState.error?.let { error ->
-            Text("$error\nRetrying...", color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.titleLarge)
+    uiState.error?.let { error ->
+        Text("$error\nRetrying...", color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.titleLarge)
+        return
+    }
+    Column(modifier = Modifier.padding(16.dp)) {
+        Text(APP_NAME, style = MaterialTheme.typography.titleLarge, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
+        Spacer(Modifier.height(16.dp))
+        if (trains.isEmpty()) {
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text("No trains found", style = MaterialTheme.typography.titleLarge)
+            }
             return
         }
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(APP_NAME, style = MaterialTheme.typography.titleLarge, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
-            Spacer(Modifier.height(16.dp))
-            if (trains.isEmpty()) {
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("No trains found", style = MaterialTheme.typography.titleLarge)
-                }
-                return
-            }
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                for (train in trains) {
-                    val playerColor = train.currentPlayer?.color?.composeColor ?: Color.Gray
-                    Column(
-                        Modifier.displayHoveringPlayers(uiState, train).displayCurrentPlayer(train).padding(32.dp)
-                            .thenIf(train.hub.state != Hub.State.READY, Modifier.blur(4.dp)),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(train.name, modifier = Modifier.padding(bottom = 4.dp))
-                        Slider(
-                            modifier = Modifier.rotateWhileKeepingConstrains().width(120.dp).height(50.dp),
-                            value = train.speed.toFloat().absoluteValue,
-                            onValueChange = { newSpeed ->
-                                CoroutineScope(Dispatchers.MyIO).launch { train.changeSpeed(newSpeed.toInt()) }
-                            },
-                            valueRange = 0f..100f,
-                            colors = SliderDefaults.colors().copy(
-                                activeTrackColor = playerColor,
-                                thumbColor = playerColor,
-                            )
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+            for (train in trains) {
+                val playerColor = train.currentPlayer?.color?.composeColor ?: Color.Gray
+                Column(
+                    Modifier.displayHoveringPlayers(uiState, train).displayCurrentPlayer(train).padding(32.dp)
+                        .thenIf(train.hub.state != Hub.State.READY, Modifier.blur(4.dp)),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(train.name, modifier = Modifier.padding(bottom = 4.dp))
+                    Slider(
+                        modifier = Modifier.rotateWhileKeepingConstrains().width(120.dp).height(50.dp),
+                        value = train.speed.toFloat().absoluteValue,
+                        onValueChange = { newSpeed ->
+                            CoroutineScope(Dispatchers.MyIO).launch { train.changeSpeed(newSpeed.toInt()) }
+                        },
+                        valueRange = 0f..100f,
+                        colors = SliderDefaults.colors().copy(
+                            activeTrackColor = playerColor,
+                            thumbColor = playerColor,
                         )
-                        Text("Speed: ${train.speed}", modifier = Modifier.padding(top = 4.dp))
-                        Button(
-                            shape = RectangleShape,
-                            enabled = train.speed != 0,
-                            colors = ButtonDefaults.buttonColors().copy(containerColor = playerColor),
-                            onClick = { CoroutineScope(Dispatchers.MyIO).launch { train.changeSpeed(0) } }) {
-                            Text("Stop")
-                        }
-                        Row(Modifier.clickable { CoroutineScope(Dispatchers.MyIO).launch { train.toggleReverseDirection() } }) {
-                            Text("Reverse\nDirection:")
-                            Checkbox(
-                                checked = train.reverseDirection,
-                                colors = CheckboxDefaults.colors(checkedColor = playerColor),
-                                onCheckedChange = { CoroutineScope(Dispatchers.MyIO).launch { train.toggleReverseDirection() } }
-                            )
-                        }
-                        Button(
-                            shape = RectangleShape,
-                            colors = ButtonDefaults.buttonColors().copy(containerColor = playerColor),
-                            onClick = { CoroutineScope(Dispatchers.MyIO).launch { train.toggleLight() } }) {
-                            Text("Toggle Light")
-                        }
+                    )
+                    Text("Speed: ${train.speed}", modifier = Modifier.padding(top = 4.dp))
+                    Button(
+                        shape = RectangleShape,
+                        enabled = train.speed != 0,
+                        colors = ButtonDefaults.buttonColors().copy(containerColor = playerColor),
+                        onClick = { CoroutineScope(Dispatchers.MyIO).launch { train.changeSpeed(0) } }) {
+                        Text("Stop")
+                    }
+                    Row(Modifier.clickable { CoroutineScope(Dispatchers.MyIO).launch { train.toggleReverseDirection() } }) {
+                        Text("Reverse\nDirection:")
+                        Checkbox(
+                            checked = train.reverseDirection,
+                            colors = CheckboxDefaults.colors(checkedColor = playerColor),
+                            onCheckedChange = { CoroutineScope(Dispatchers.MyIO).launch { train.toggleReverseDirection() } }
+                        )
+                    }
+                    Button(
+                        shape = RectangleShape,
+                        colors = ButtonDefaults.buttonColors().copy(containerColor = playerColor),
+                        onClick = { CoroutineScope(Dispatchers.MyIO).launch { train.toggleLight() } }) {
+                        Text("Toggle Light")
                     }
                 }
             }
         }
     }
+
     Box(contentAlignment = Alignment.BottomCenter) {
         GamepadButtonMappingDisplay()
     }

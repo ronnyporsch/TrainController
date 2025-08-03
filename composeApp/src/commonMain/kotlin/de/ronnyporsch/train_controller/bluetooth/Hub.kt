@@ -88,19 +88,23 @@ data class Hub(
     companion object {
         private val _hubs = MutableStateFlow(emptyList<Hub>())
         val hubs = _hubs.asStateFlow()
-        fun scanForHubsContinuously(coroutineScope: CoroutineScope) = CoroutineScope(coroutineScope.coroutineContext).launch {
+        fun scanForHubsContinuously(coroutineScope: CoroutineScope, bluetoothManager: BluetoothManager) = CoroutineScope(coroutineScope.coroutineContext).launch {
             logger.i("Scanning for hubs ...")
-            scanner.advertisements.collect { advertisement ->
-                if (_hubs.value.any { it.identifier == advertisement.identifier }) return@collect
-                if (advertisement.manufacturerData?.code == MANUFACTURER_CODE_LEGO) {
-                    logger.i("Found hub: ${advertisement.identifier}")
-                    val peripheral = Peripheral(advertisement)
-                    val hub = Hub(advertisement.identifier, peripheral)
-                    _hubs.update { it + hub }
-                    launch {
-                        hub.connect()
+            try {
+                scanner.advertisements.collect { advertisement ->
+                    if (_hubs.value.any { it.identifier == advertisement.identifier }) return@collect
+                    if (advertisement.manufacturerData?.code == MANUFACTURER_CODE_LEGO) {
+                        logger.i("Found hub: ${advertisement.identifier}")
+                        val peripheral = Peripheral(advertisement)
+                        val hub = Hub(advertisement.identifier, peripheral)
+                        _hubs.update { it + hub }
+                        launch {
+                            hub.connect()
+                        }
                     }
                 }
+            } catch (e: Exception) {
+                bluetoothManager.setBluetoothError(e)
             }
         }
 

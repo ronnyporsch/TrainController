@@ -2,6 +2,8 @@ package de.ronnyporsch.train_controller.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import de.ronnyporsch.train_controller.bluetooth.BluetoothManager
+import de.ronnyporsch.train_controller.bluetooth.BluetoothState
 import de.ronnyporsch.train_controller.bluetooth.Hub
 import de.ronnyporsch.train_controller.domain.Player
 import de.ronnyporsch.train_controller.domain.Train
@@ -18,10 +20,18 @@ class TrainControlViewModel : ViewModel() {
 
     private val _uiState = MutableStateFlow(TrainControlUiState())
     val uiState = _uiState.asStateFlow()
+    val bluetoothManager = BluetoothManager()
 
     init {
         handleGamepadEvents()
-        Hub.scanForHubsContinuously(viewModelScope)
+        bluetoothManager.askUserToGrantBluetoothPermissions()
+        CoroutineScope(Dispatchers.IO).launch {
+            bluetoothManager.bluetoothStateFlow.collect {
+                if (it == BluetoothState.EnabledAndPermissionGranted) {
+                    Hub.scanForHubsContinuously(viewModelScope, bluetoothManager)
+                }
+            }
+        }
     }
 
     fun hoverNextTrain(player: Player) {

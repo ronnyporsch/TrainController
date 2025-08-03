@@ -2,7 +2,7 @@ package de.ronnyporsch.train_controller.permissions
 
 import android.Manifest
 
-val requiredPermissions =
+val bluetoothPermissions =
     arrayOf(
         Manifest.permission.BLUETOOTH_SCAN,
         Manifest.permission.BLUETOOTH_CONNECT,
