@@ -49,14 +49,11 @@ actual class BluetoothManager : DefaultLifecycleObserver {
     }
 
     actual fun askUserToEnableBluetoothIfNotOnAlready() {
-        val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
+        val bluetoothAdapter: BluetoothAdapter = BluetoothAdapter.getDefaultAdapter() ?: return
 
-        if (bluetoothAdapter == null) {
-            return
-        }
         if (!bluetoothAdapter.isEnabled) {
             val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
-            activity?.let { startActivityForResult(it, enableBtIntent, 1002, null) }
+            activity?.let { startActivityForResult(it, enableBtIntent, 0, null) }
             return
         }
         _bluetoothStateFlow.value = BluetoothState.EnabledAndPermissionGranted
