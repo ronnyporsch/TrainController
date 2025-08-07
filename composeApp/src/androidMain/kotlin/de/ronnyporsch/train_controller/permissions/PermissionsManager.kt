@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import java.lang.ref.WeakReference
 
-class PermissionManager private constructor(caller: ActivityResultCaller) {
+class PermissionManager<T> private constructor(val caller: T) where T : ActivityResultCaller, T : Context {
 
     private val _grantedPermissions = MutableStateFlow(emptyArray<String>())
     val grantedPermissions: StateFlow<Array<String>> = _grantedPermissions
@@ -27,18 +27,16 @@ class PermissionManager private constructor(caller: ActivityResultCaller) {
 
     fun hasPermissions(permissions: Array<String>): Boolean {
         return permissions.all { permission ->
-            context.get()?.let { ContextCompat.checkSelfPermission(it, permission) == PackageManager.PERMISSION_GRANTED } == true
+            ContextCompat.checkSelfPermission(caller, permission) == PackageManager.PERMISSION_GRANTED
         }
     }
 
     companion object {
-        lateinit var INSTANCE: PermissionManager
-        private lateinit var context: WeakReference<Context>
+        lateinit var INSTANCE: PermissionManager<*>
 
         //has to be called during onCreate(); see https://stackoverflow.com/q/64476827
         fun <T> init(caller: T) where T : ActivityResultCaller, T : Context {
             INSTANCE = PermissionManager(caller)
-            context = WeakReference(caller as Context)
         }
     }
 }
