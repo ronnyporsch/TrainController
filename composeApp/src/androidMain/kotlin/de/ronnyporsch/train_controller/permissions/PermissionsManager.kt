@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 
-class PermissionManager<T> private constructor(val caller: T) where T : ActivityResultCaller, T : Context {
+class PermissionManager<T> private constructor(private val caller: T) where T : ActivityResultCaller, T : Context {
 
     private val _grantedPermissions = MutableStateFlow(emptyArray<String>())
     val grantedPermissions: StateFlow<Array<String>> = _grantedPermissions
