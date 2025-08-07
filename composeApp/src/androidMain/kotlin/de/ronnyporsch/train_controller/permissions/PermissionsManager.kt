@@ -8,7 +8,6 @@ import androidx.core.content.ContextCompat
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
-import java.lang.ref.WeakReference
 
 class PermissionManager<T> private constructor(val caller: T) where T : ActivityResultCaller, T : Context {
 
