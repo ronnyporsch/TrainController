@@ -9,23 +9,24 @@ import androidx.compose.ui.unit.Constraints
 /**
  * - Based on [this Stackoverflow answer](https://stackoverflow.com/a/71129399)
  */
-fun Modifier.rotateWhileKeepingConstrains(degrees: Float = -90f) = this.then(
-    graphicsLayer {
-        rotationZ = degrees
-        transformOrigin = TransformOrigin(0f, 0f)
-    }.then(
-        layout { measurable, constraints ->
-            val placeable = measurable.measure(
-                Constraints(
-                    minWidth = constraints.minHeight,
-                    maxWidth = constraints.maxHeight,
-                    minHeight = constraints.minWidth,
-                    maxHeight = constraints.maxHeight,
-                )
-            )
-            layout(placeable.height, placeable.width) {
-                placeable.place(-placeable.width, 0)
+fun Modifier.rotateWhileKeepingConstrains(degrees: Float = -90f): Modifier =
+    this.then(
+        Modifier
+            .graphicsLayer {
+                rotationZ = degrees
+                transformOrigin = TransformOrigin(0f, 0f)
             }
-        }
+            .layout { measurable, constraints ->
+                val placeable = measurable.measure(
+                    Constraints(
+                        minWidth = constraints.minHeight,
+                        maxWidth = constraints.maxHeight,
+                        minHeight = constraints.minWidth,
+                        maxHeight = constraints.maxHeight,
+                    )
+                )
+                layout(placeable.height, placeable.width) {
+                    placeable.place(-placeable.width, 0)
+                }
+            }
     )
-)
