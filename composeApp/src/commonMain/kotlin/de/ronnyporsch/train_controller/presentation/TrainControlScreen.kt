@@ -25,7 +25,7 @@ import de.ronnyporsch.train_controller.bluetooth.Hub
 import de.ronnyporsch.train_controller.core.MyIO
 import de.ronnyporsch.train_controller.domain.Train
 import de.ronnyporsch.train_controller.util.presentation.rotateWhileKeepingConstrains
-import de.ronnyporsch.train_controller.util.presentation.thenIf
+import de.ronnyporsch.train_controller.util.presentation.ifThen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -78,7 +78,7 @@ private fun TrainOverview(viewModel: TrainControlViewModel) {
                 val playerColor = train.currentPlayer?.color?.composeColor ?: Color.Gray
                 Column(
                     Modifier.displayHoveringPlayers(uiState, train).displayCurrentPlayer(train).padding(32.dp)
-                        .thenIf(train.hub.state != Hub.State.READY, Modifier.blur(4.dp)),
+                        .ifThen(train.hub.state != Hub.State.READY, Modifier.blur(4.dp)),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
