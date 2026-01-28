@@ -2,14 +2,18 @@ package de.ronnyporsch.train_controller.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import de.ronnyporsch.train_controller.PlatformName
 import de.ronnyporsch.train_controller.bluetooth.BluetoothManager
 import de.ronnyporsch.train_controller.bluetooth.BluetoothState
 import de.ronnyporsch.train_controller.bluetooth.Hub
+import de.ronnyporsch.train_controller.bluetooth.scanForHubsOnce
+import de.ronnyporsch.train_controller.core.MyIO
 import de.ronnyporsch.train_controller.domain.Player
 import de.ronnyporsch.train_controller.domain.Train
 import de.ronnyporsch.train_controller.domain.Train.Companion.trains
 import de.ronnyporsch.train_controller.gamepad.Gamepad
 import de.ronnyporsch.train_controller.gamepad.GamepadEvent
+import de.ronnyporsch.train_controller.getPlatform
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,9 +29,9 @@ class TrainControlViewModel : ViewModel() {
     init {
         handleGamepadEvents()
         bluetoothManager.askUserToGrantBluetoothPermissions()
-        CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(Dispatchers.MyIO).launch {
             bluetoothManager.bluetoothStateFlow.collect {
-                if (it == BluetoothState.EnabledAndPermissionGranted) {
+                if (it == BluetoothState.EnabledAndPermissionGranted && getPlatform().name != PlatformName.WasmJs) {
                     Hub.scanForHubsContinuously(viewModelScope, bluetoothManager)
                 }
             }
@@ -57,9 +61,9 @@ class TrainControlViewModel : ViewModel() {
     }
 
     fun handleGamepadEvents() {
-        val gamepads = Gamepad.getALlGamepads() //TODO use remember here?
+        val gamepads = Gamepad.getAllGamepads() //TODO use remember here?
         gamepads.forEach { gamepad ->
-            CoroutineScope(Dispatchers.IO).launch {
+            CoroutineScope(Dispatchers.MyIO).launch {
                 gamepad.eventFlow.collect { event ->
                     val player = getPlayerForGamepad(gamepad) ?: return@collect
                     when (event) {
@@ -107,7 +111,7 @@ class TrainControlViewModel : ViewModel() {
         when (gamepadIntent) {
             is GamepadIntent.SelectHoveredTrain -> {
                 if (player.hoveredTrain?.currentPlayer == player) return
-                CoroutineScope(Dispatchers.IO).launch {
+                CoroutineScope(Dispatchers.MyIO).launch {
                     player.hoveredTrain?.setCurrentPlayer(player)
                     gamepad.shortVibration()
                 }
@@ -115,11 +119,11 @@ class TrainControlViewModel : ViewModel() {
 
             GamepadIntent.HoverNextTrain -> hoverNextTrain(player)
             GamepadIntent.HoverPreviousTrain -> hoverPreviousTrain(player)
-            GamepadIntent.ToggleReverseDirection -> CoroutineScope(Dispatchers.IO).launch { player.hoveredTrain?.toggleReverseDirection() }
-            GamepadIntent.DecreaseSpeed -> CoroutineScope(Dispatchers.IO).launch { getAllControlledTrainsOfPlayer(player).forEach { train -> train.decreaseSpeed() } }
-            GamepadIntent.IncreaseSpeed -> CoroutineScope(Dispatchers.IO).launch { getAllControlledTrainsOfPlayer(player).forEach { train -> train.increaseSpeed() } }
-            GamepadIntent.DeselectHoveredTrain -> CoroutineScope(Dispatchers.IO).launch { deselectHoveredTrain(player) }
-            GamepadIntent.Stop -> CoroutineScope(Dispatchers.IO).launch {
+            GamepadIntent.ToggleReverseDirection -> CoroutineScope(Dispatchers.MyIO).launch { player.hoveredTrain?.toggleReverseDirection() }
+            GamepadIntent.DecreaseSpeed -> CoroutineScope(Dispatchers.MyIO).launch { getAllControlledTrainsOfPlayer(player).forEach { train -> train.decreaseSpeed() } }
+            GamepadIntent.IncreaseSpeed -> CoroutineScope(Dispatchers.MyIO).launch { getAllControlledTrainsOfPlayer(player).forEach { train -> train.increaseSpeed() } }
+            GamepadIntent.DeselectHoveredTrain -> CoroutineScope(Dispatchers.MyIO).launch { deselectHoveredTrain(player) }
+            GamepadIntent.Stop -> CoroutineScope(Dispatchers.MyIO).launch {
                 getAllControlledTrainsOfPlayer(player).forEach { train ->
                     train.changeSpeed(
                         0
@@ -127,8 +131,12 @@ class TrainControlViewModel : ViewModel() {
                 }
             }
 
-            GamepadIntent.ToggleLight -> CoroutineScope(Dispatchers.IO).launch { getAllControlledTrainsOfPlayer(player).forEach { train -> train.toggleLight() } }
+            GamepadIntent.ToggleLight -> CoroutineScope(Dispatchers.MyIO).launch { getAllControlledTrainsOfPlayer(player).forEach { train -> train.toggleLight() } }
         }
+    }
+
+    fun scanForHubs() {
+        Hub.scanForHubsOnce(viewModelScope, bluetoothManager)
     }
 
 }

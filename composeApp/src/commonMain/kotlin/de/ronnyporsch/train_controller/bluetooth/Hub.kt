@@ -11,6 +11,7 @@ import com.juul.kable.logs.Logging
 import com.juul.kable.logs.SystemLogEngine
 import de.ronnyporsch.train_controller.util.logger
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
@@ -44,7 +45,9 @@ data class Hub(
         val legoService = services?.first { it.serviceUuid.toString() == LEGO_SERVICE_UUID }
         writeCharacteristic = legoService?.characteristics?.first { it.characteristicUuid.toString() == WRITE_CHARACTERISTIC_UUID }
         logger.d("writeCharacteristic retrieved: ${writeCharacteristic?.characteristicUuid}")
-        if (writeCharacteristic != null) {state = State.READY }
+        if (writeCharacteristic != null) {
+            state = State.READY
+        }
     }
 
 
@@ -88,32 +91,45 @@ data class Hub(
     companion object {
         private val _hubs = MutableStateFlow(emptyList<Hub>())
         val hubs = _hubs.asStateFlow()
-        fun scanForHubsContinuously(coroutineScope: CoroutineScope, bluetoothManager: BluetoothManager) = CoroutineScope(coroutineScope.coroutineContext).launch {
-            logger.i("Scanning for hubs ...")
-            try {
-                scanner.advertisements.collect { advertisement ->
-                    if (_hubs.value.any { it.identifier == advertisement.identifier }) return@collect
-                    if (advertisement.manufacturerData?.code == MANUFACTURER_CODE_LEGO) {
-                        logger.i("Found hub: ${advertisement.identifier}")
-                        val peripheral = Peripheral(advertisement)
-                        val hub = Hub(advertisement.identifier, peripheral)
-                        _hubs.update { it + hub }
-                        launch {
-                            hub.connect()
+
+        fun scanForHubsContinuously(coroutineScope: CoroutineScope, bluetoothManager: BluetoothManager) =
+            CoroutineScope(coroutineScope.coroutineContext).launch {
+                logger.i("Scanning for hubs ...")
+                try {
+                    scanner.advertisements.collect { advertisement ->
+                        if (_hubs.value.any { it.identifier == advertisement.identifier }) return@collect
+                        if (advertisement.manufacturerData?.code == MANUFACTURER_CODE_LEGO) {
+                            logger.i("Found hub: ${advertisement.identifier}")
+                            val peripheral = Peripheral(advertisement)
+                            val hub = Hub(advertisement.identifier, peripheral)
+                            _hubs.update { it + hub }
+                            launch {
+                                hub.connect()
+                            }
                         }
                     }
+                } catch (e: Exception) {
+                    bluetoothManager.setBluetoothError(e)
                 }
-            } catch (e: Exception) {
-                bluetoothManager.setBluetoothError(e)
+            }
+
+        fun addAndConnectHub(peripheral: Peripheral?, coroutineScope: CoroutineScope) {
+            peripheral?.let {
+                val hub = Hub(it.identifier, it)
+                _hubs.update { hubs -> hubs + hub }
+                coroutineScope.launch {
+                    hub.connect()
+                }
             }
         }
-
     }
 
     enum class State {
         NOT_YET_CONNECTED, PREPARING, READY
     }
 }
+
+expect fun Hub.Companion.scanForHubsOnce(coroutineScope: CoroutineScope, bluetoothManager: BluetoothManager): Job
 
 private val scanner = Scanner {
     logging {

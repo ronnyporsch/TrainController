@@ -54,6 +54,6 @@ actual class Gamepad actual constructor(actual val index: Int) {
     actual companion object {
         actual const val MAX_GAMEPADS = 4
         actual const val MAX_VALUE_TRIGGER = 255
-        actual fun getALlGamepads() = List(MAX_GAMEPADS) { index -> Gamepad(index) }
+        actual fun getAllGamepads() = List(MAX_GAMEPADS) { index -> Gamepad(index) }
     }
 }

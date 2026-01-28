@@ -1,7 +1,15 @@
 package de.ronnyporsch.train_controller.presentation
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -17,7 +25,7 @@ import de.ronnyporsch.train_controller.util.camelCaseToCapitalizedWithSpaces
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-actual fun GamepadButtonMappingDisplay() {
+fun GamepadButtonMappingDisplay() {
     LazyVerticalGrid(
         columns = GridCells.Adaptive(minSize = 128.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -44,7 +52,7 @@ actual fun GamepadButtonMappingDisplay() {
 }
 
 @Composable
-fun GamepadIntentCell(intentDescription: String, painterResource: Painter) {
+private fun GamepadIntentCell(intentDescription: String, painterResource: Painter) {
     Row(
         verticalAlignment = CenterVertically,
         modifier = Modifier

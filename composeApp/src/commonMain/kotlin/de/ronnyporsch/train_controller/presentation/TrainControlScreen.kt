@@ -20,10 +20,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import de.ronnyporsch.train_controller.APP_NAME
+import de.ronnyporsch.train_controller.PlatformName
 import de.ronnyporsch.train_controller.bluetooth.BluetoothState
 import de.ronnyporsch.train_controller.bluetooth.Hub
 import de.ronnyporsch.train_controller.core.MyIO
 import de.ronnyporsch.train_controller.domain.Train
+import de.ronnyporsch.train_controller.getPlatform
 import de.ronnyporsch.train_controller.util.presentation.rotateWhileKeepingConstrains
 import de.ronnyporsch.train_controller.util.presentation.ifThen
 import kotlinx.coroutines.CoroutineScope
@@ -36,15 +38,17 @@ fun TrainControlScreen(viewModel: TrainControlViewModel) {
     val bluetoothManager = viewModel.bluetoothManager
     val bluetoothState by bluetoothManager.bluetoothStateFlow.collectAsStateWithLifecycle()
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        when (bluetoothState) {
-            BluetoothState.NotSupported -> Text("Bluetooth is not supported on this device")
-            BluetoothState.DisabledAndPermissionDenied -> BluetoothProblem(
-                "Grant Bluetooth Permission",
-                { bluetoothManager.askUserToGrantBluetoothPermissions() })
+        Column {
+            when (bluetoothState) {
+                BluetoothState.NotSupported -> Text("Bluetooth is not supported on this device")
+                BluetoothState.DisabledAndPermissionDenied -> BluetoothProblem(
+                    "Grant Bluetooth Permission",
+                    { bluetoothManager.askUserToGrantBluetoothPermissions() })
 
-            BluetoothState.DisabledAndPermissionGranted -> BluetoothProblem("Enable Bluetooth") { bluetoothManager.askUserToEnableBluetoothIfNotOnAlready() }
-            BluetoothState.EnabledAndPermissionGranted -> TrainOverview(viewModel)
-            is BluetoothState.Error -> Text("Error: ${(bluetoothState as BluetoothState.Error).exception.message}")
+                BluetoothState.DisabledAndPermissionGranted -> BluetoothProblem("Enable Bluetooth") { bluetoothManager.askUserToEnableBluetoothIfNotOnAlready() }
+                BluetoothState.EnabledAndPermissionGranted -> TrainOverview(viewModel)
+                is BluetoothState.Error -> Text("${(bluetoothState as BluetoothState.Error).exception::class.simpleName}: ${(bluetoothState as BluetoothState.Error).exception.message}")
+            }
         }
     }
 }
@@ -65,16 +69,19 @@ private fun TrainOverview(viewModel: TrainControlViewModel) {
         return
     }
     Scaffold(bottomBar = {
-        GamepadButtonMappingDisplay()
+        if (getPlatform().name != PlatformName.Android) GamepadButtonMappingDisplay()
     }) { paddingValues ->
-        Column(verticalArrangement = Arrangement.Center, modifier = Modifier.padding(paddingValues).fillMaxSize()) {
+        Column(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(paddingValues).fillMaxSize()
+        ) {
             Text(APP_NAME, style = MaterialTheme.typography.titleLarge, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
             Spacer(Modifier.height(16.dp))
             if (trains.isEmpty()) {
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Box {
                     Text("No trains found", style = MaterialTheme.typography.titleLarge)
                 }
-                return@Column
             }
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
                 for (train in trains) {
@@ -123,13 +130,15 @@ private fun TrainOverview(viewModel: TrainControlViewModel) {
                     }
                 }
             }
+            if (getPlatform().name == PlatformName.WasmJs) {
+                Spacer(Modifier.height(16.dp))
+                Button(onClick = { viewModel.scanForHubs() }) {
+                    Text("Scan for Hubs")
+                }
+            }
         }
     }
 }
-
-
-@Composable
-expect fun GamepadButtonMappingDisplay()
 
 fun Modifier.displayCurrentPlayer(train: Train): Modifier {
     val player = train.currentPlayer ?: return this

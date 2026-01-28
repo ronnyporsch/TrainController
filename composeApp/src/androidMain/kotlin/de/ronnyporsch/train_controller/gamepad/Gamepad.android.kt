@@ -51,11 +51,11 @@ actual data class Gamepad actual constructor(actual val index: Int) {
     actual companion object {
         actual val MAX_GAMEPADS = 4 //TODO not needed on android?
         actual val MAX_VALUE_TRIGGER = 1
-        actual fun getALlGamepads(): List<Gamepad> {
-            return allG
+        actual fun getAllGamepads(): List<Gamepad> {
+            return allGamepads
         }
 
-        val allG: List<Gamepad> =
+        private val allGamepads: List<Gamepad> =
             InputDevice.getDeviceIds()
                 .filter { InputDevice.getDevice(it)?.isGamepad() ?: false }
                 .map { Gamepad(index = it) }
@@ -67,7 +67,7 @@ actual data class Gamepad actual constructor(actual val index: Int) {
         fun handleKeyEvent(event: KeyEvent): Boolean {
             val device = event.device
             if (device != null && device.isGamepad()) {
-                val allGamepads = getALlGamepads()
+                val allGamepads = getAllGamepads()
                 allGamepads.firstOrNull { it.index == device.id }?.let { gamepad ->
                     CoroutineScope(Dispatchers.IO).launch {
                         val button = event.keyCode
@@ -88,7 +88,7 @@ actual data class Gamepad actual constructor(actual val index: Int) {
         fun handleMotionEvent(event: MotionEvent): Boolean {
             val device = event.device
             if (device != null && device.isGamepad()) {
-                val allGamepads = getALlGamepads()
+                val allGamepads = getAllGamepads()
                 allGamepads.firstOrNull { it.index == device.id }?.let { gamepad ->
                     CoroutineScope(Dispatchers.IO).launch {
                         //left stick is currently not used

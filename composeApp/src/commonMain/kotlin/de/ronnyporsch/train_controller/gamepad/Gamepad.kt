@@ -9,6 +9,6 @@ expect class Gamepad(index: Int) {
     companion object {
         val MAX_GAMEPADS : Int
         val MAX_VALUE_TRIGGER : Int
-        fun getALlGamepads() : List<Gamepad>
+        fun getAllGamepads() : List<Gamepad>
     }
 }
