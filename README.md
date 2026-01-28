@@ -1,5 +1,6 @@
 ![Platform: Windows](https://img.shields.io/badge/Platform-Windows-blue)
 ![Platform: Android](https://img.shields.io/badge/Platform-Android-green?logo=android&logoColor=white)
+![Platform: Browser](https://img.shields.io/badge/Platform-Browser-orange)
 
 
 # Train Controller
@@ -23,12 +24,17 @@ Control your Lego Powered Up Trains from your PC or phone! You can even do so wi
 
 ## Build it locally
 - Clone the repository
-- run it using ".\gradlew composeApp:run"
+- **Desktop:** run it using ".\gradlew composeApp:run"
+- **Android:** 
+  - connect your Android device
+  - install the app using ".\gradlew composeApp:installDebug"
+- **Browser:**: run it using ".\gradlew wasmJsBrowserProductionRun"
 
 ## Limitations
 - This program only works with the Lego City Powered Up Hubs (found for example in the current [Passenger](https://www.lego.com/en-us/product/express-passenger-train-60337) and [Freight Trains](https://www.lego.com/en-us/product/freight-train-60336) )
 - The program expects the Motor to be on Port A of the train hub, the light (if available) on Port B
 - Gamepad Support was only tested with Xbox One Gamepads. Others may or may not work properly
+- The Browser version requires support for the [Web Bluetooth API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Bluetooth_API#browser_compatibility)
 
 ## Credits
 This software was inspired by the amazing [Brick Automation Project](https://github.com/Cosmik42/BAP)
