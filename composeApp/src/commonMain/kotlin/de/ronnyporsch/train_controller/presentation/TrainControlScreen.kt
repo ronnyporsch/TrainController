@@ -40,7 +40,7 @@ fun TrainControlScreen(viewModel: TrainControlViewModel) {
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column {
             when (bluetoothState) {
-                BluetoothState.NotSupported -> Text("Bluetooth is not supported on this device")
+                BluetoothState.NotSupported -> Text("Bluetooth is not supported ${if (getPlatform().name == PlatformName.WasmJs) "by this browser" else "on this device"}")
                 BluetoothState.DisabledAndPermissionDenied -> BluetoothProblem(
                     "Grant Bluetooth Permission",
                     { bluetoothManager.askUserToGrantBluetoothPermissions() })
