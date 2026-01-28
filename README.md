@@ -23,12 +23,13 @@ Control your Lego Powered Up Trains from your PC or phone! You can even do so wi
 - Enjoy!
 
 ## Build it locally
-- Clone the repository
-- **Desktop:** run it using ".\gradlew composeApp:run"
-- **Android:** 
-  - connect your Android device
-  - install the app using ".\gradlew composeApp:installDebug"
-- **Browser:**: run it using ".\gradlew wasmJsBrowserProductionRun"
+1. Clone the repository
+2. Run the app on your target platform:
+   - **Desktop:** `.\gradlew composeApp:run`
+   - **Android:** 
+     - connect your Android device
+     - install the app using `.\gradlew composeApp:installDebug`
+   - **Browser:**: `.\gradlew wasmJsBrowserProductionRun`
 
 ## Limitations
 - This program only works with the Lego City Powered Up Hubs (found for example in the current [Passenger](https://www.lego.com/en-us/product/express-passenger-train-60337) and [Freight Trains](https://www.lego.com/en-us/product/freight-train-60336) )
