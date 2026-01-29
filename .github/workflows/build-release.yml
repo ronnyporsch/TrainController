@@ -1,0 +1,53 @@
+name: Build Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version (e.g. 1.2.0)"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    env:
+      VERSION: ${{ github.event.inputs.version }}
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: jetbrains
+          java-version: 21
+          cache: gradle
+
+      - name: Build Android Distributable
+        run: ./gradlew composeApp:assembleRelease
+
+      - name: Build Windows Distributable
+        run: ./gradlew composeApp:createDistributable
+
+      - name: Collect artifacts
+        shell: pwsh
+        run: |
+          mkdir release
+          cp composeApp/build/outputs/apk/release/*.apk release/android.apk
+          Compress-Archive -Path composeApp/build/compose/binaries/main/app/* -Destination release/windowsApp.zip
+
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.VERSION }}
+          name: Release ${{ env.VERSION }}
+          files: release/**
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
