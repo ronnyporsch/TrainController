@@ -69,7 +69,7 @@ private fun TrainOverview(viewModel: TrainControlViewModel) {
         return
     }
     Scaffold(bottomBar = {
-        if (getPlatform().name != PlatformName.Android) GamepadButtonMappingDisplay()
+        if (getPlatform().name != PlatformName.Android && !trains.isEmpty()) GamepadButtonMappingDisplay()
     }) { paddingValues ->
         Column(
             verticalArrangement = Arrangement.Center,
