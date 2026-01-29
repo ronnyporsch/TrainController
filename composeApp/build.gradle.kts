@@ -91,6 +91,10 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    buildOutputs.all {
+        //change .apk file name
+        (this as? com.android.build.gradle.internal.api.BaseVariantOutputImpl)?.outputFileName = "TrainController-${this.name}.apk"
+    }
     buildTypes {
         debug {
             versionNameSuffix = "-$name"
