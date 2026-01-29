@@ -4,7 +4,7 @@
 
 
 # Train Controller
-Control your Lego Powered Up Trains from your PC or phone! You can even do so with a gamepad (or more than one!)
+Control your Lego Powered Up Trains from your PC or phone! You can even do so with a gamepad (or more than one!) Try it out at https://ronnyporsch.github.io/TrainController
 ## Features
 - **Control speed and Light**
 - **Gamepad Support**: use your Xbox Gamepad to drive your trains
@@ -15,17 +15,21 @@ Control your Lego Powered Up Trains from your PC or phone! You can even do so wi
 <img width="1037" height="827" alt="Screenshot 2025-07-27 131602" src="https://github.com/user-attachments/assets/43d9b4e8-7869-4bc0-a747-71ef395ed05f" />
 
 ## How to use
-- Download and unzip the [latest Release](https://github.com/ronnyporsch/TrainController/releases/latest)
-  - Windows: Run TrainController.exe in the root dir 
-  - Android: Install and run the TrainController.apk
-- (Optional) Connect up to four Gamepads
-- Turn on your Lego Trains
-- Enjoy!
+1. Download the [latest Release](https://github.com/ronnyporsch/TrainController/releases/latest) (Windows and Android only)
+2. Run the application:
+   - **Windows**:
+     - Unzip the TrainController.zip
+     - Run TrainController.exe  
+   - **Android**: Install and run the TrainController.apk
+   - **Browser:** Open https://ronnyporsch.github.io/TrainController
+3. (Optional) Connect up to four Gamepads
+4. Turn on your Lego Trains
+5. Enjoy!
 
 ## Build it locally
 1. Clone the repository
 2. Run the app on your target platform:
-   - **Desktop:** `.\gradlew composeApp:run`
+   - **Windows:** `.\gradlew composeApp:run`
    - **Android:** 
      - connect your Android device
      - install the app using `.\gradlew composeApp:installDebug`
